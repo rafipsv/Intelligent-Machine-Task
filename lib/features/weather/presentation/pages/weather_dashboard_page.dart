@@ -28,20 +28,28 @@ class _WeatherDashboardPageState extends State<WeatherDashboardPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => di.sl<LocationBloc>()..add(const FetchLocationEvent()),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) => di.sl<LocationBloc>()..add(const FetchLocationEvent()),
+        ),
+        BlocProvider(
+          create: (_) => di.sl<WeatherBloc>(),
+        ),
+      ],
       child: Scaffold(
         appBar: AppBar(
           title: const Text('SkySentinel'),
           centerTitle: true,
           actions: [
-            IconButton(
-              icon: const Icon(Icons.refresh),
-              onPressed: () {
-                context.read<LocationBloc>().add(const FetchLocationEvent());
-              },
-            ),
-          ],
+            Builder(
+              builder: (context) => IconButton(
+                icon: const Icon(Icons.refresh),
+                onPressed: () {
+                  context.read<LocationBloc>().add(const FetchLocationEvent());
+                },
+              ),
+            ),          ],
         ),
         body: BlocListener<LocationBloc, LocationState>(
           listener: (context, state) {

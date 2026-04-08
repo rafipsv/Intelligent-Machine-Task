@@ -35,10 +35,19 @@ class LocationDataSource {
         );
       }
 
-      // Get current position with high accuracy
+      // Try to get last known position first (faster and more reliable on emulator)
+      Position? lastPosition = await Geolocator.getLastKnownPosition();
+
+      if (lastPosition != null) {
+        return lastPosition;
+      }
+
+      // Get current position with medium accuracy for emulator stability
+      // Use timeLimit to prevent hanging
       return await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.high,
+          accuracy: LocationAccuracy.medium,
+          timeLimit: Duration(seconds: 10),
         ),
       );
     } on LocationException {
